@@ -22,10 +22,57 @@ This project analyzes the strengths and weaknesses of SAM and Edge Detection ind
 
 ---
 
+Here's the updated section:
+
+---
+
 ## 🚀 **How to Start the Project**
 
 ### **2-1. Running SAM**
-To be added soon.
+Follow the instructions below for running SAM.
+
+#### **1️⃣ Pre-requisites**
+Clone the SAM repository:
+```bash
+git clone https://github.com/facebookresearch/sam2.git
+```
+
+#### **2️⃣ Preprocessing Steps**
+The preprocessing pipeline includes:
+- **Green Channel Extraction** → CLAHE → Gaussian Blur → Sharpening
+
+#### **3️⃣ Execution**
+1. Adjust the grid to your desired ratio, e.g., 4x4, 5x5, or 8x8.
+2. Modify the following parameters to focus on smaller regions:
+   ```python
+   mask_generator_2 = SAM2AutomaticMaskGenerator(
+       model=sam2,
+       points_per_side=128,
+       points_per_batch=128,
+       pred_iou_thresh=0.7,
+       stability_score_thresh=0.92,
+       stability_score_offset=0.7,
+       crop_n_layers=4,
+       box_nms_thresh=0.7,
+       crop_n_points_downscale_factor=2,
+       min_mask_region_area=25.0,
+       use_m2m=True,
+   )
+   ```
+3. Use the following models and configurations:
+   ```python
+   sam2_checkpoint = "../checkpoints/sam2.1_hiera_tiny.pt"
+   model_cfg = "configs/sam2.1/sam2.1_hiera_t.yaml"
+   ```
+
+#### **4️⃣ Post-Processing**
+1. Remove masks with noise that is too small or large to be relevant.
+2. Identify the retina's boundary and crop it circularly to match its size.
+3. Within the detected boundary, perform skeletonization to refine the region.
+
+---
+
+Let me know if further adjustments or clarifications are needed!
 
 ### **2-2. Running TEED**
 Follow the instructions below, or refer to `retina_edgedetection.ipynb`.
@@ -93,6 +140,17 @@ The table below summarizes the evaluation results for **TEED** and various post-
 ---
 
 ## 📚 **External Resources**
+The SAM2 model is based on the following publication:
+
+```
+@article{ravi2024sam2,
+  title={SAM 2: Segment Anything in Images and Videos},
+  author={Ravi, Nikhila and Gabeur, Valentin and Hu, Yuan-Ting and Hu, Ronghang and Ryali, Chaitanya and Ma, Tengyu and Khedr, Haitham and R{\"a}dle, Roman and Rolland, Chloe and Gustafson, Laura and Mintun, Eric and Pan, Junting and Alwala, Kalyan Vasudev and Carion, Nicolas and Wu, Chao-Yuan and Girshick, Ross and Doll{\'a}r, Piotr and Feichtenhofer, Christoph},
+  journal={arXiv preprint arXiv:2408.00714},
+  url={https://arxiv.org/abs/2408.00714},
+  year={2024}
+}
+```
 The TEED model is based on the following publication:
 
 ```
